@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Result</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container result-box">
+        <h2>Your Results</h2>
+        <p>Score: <strong>{{ score }} / {{ total }}</strong></p>
+        <p>Percentage: <strong>{{ percentage }}%</strong></p>
+        <p class="message">{{ message }}</p>
+        <a href="{% url 'home' %}" class="btn">Try Another Quiz</a>
+    </div>
+</body>
+</html>
