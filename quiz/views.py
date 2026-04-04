@@ -10,6 +10,8 @@ def quiz(request):
         topic = request.POST.get("topic")
         num_questions = request.POST.get("num_questions")
 
+        print(topic,num_questions)
+
         if not topic or not num_questions:
             return render(request, "home.html", {"error": "Please fill all fields"})
 
@@ -22,11 +24,12 @@ def quiz(request):
 
         questions = Question.objects.filter(topic__icontains=topic)
 
-        if not questions.exists():
-            return render(request, "home.html", {"error": "No questions found for this topic"})
-
-        # Safe Random Selection
         all_questions = list(questions)
+
+        if not all_questions:
+            return render(request,"home.html",{
+                "error":"No question found for this topic"
+            })
         selected_questions = random.sample(all_questions, min(num_questions, len(all_questions)))
 
         return render(request, "quiz.html", {
