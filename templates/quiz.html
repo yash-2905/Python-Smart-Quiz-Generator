@@ -6,21 +6,47 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <div class="container">
-        <h1>Topic: {{ topic }}</h1>
-        <form method="POST" action="{% url 'result' %}">
-            {% csrf_token %}
-            {% for question in questions %}
-            <div class="question-block">
-                <p><strong>Q{{ forloop.counter }}: {{ question.question_text }}</strong></p>
-                <label class="option-label"><input type="radio" name="q{{ question.id }}" value="A" required> {{ question.option_1 }}</label>
-                <label class="option-label"><input type="radio" name="q{{ question.id }}" value="B"> {{ question.option_2 }}</label>
-                <label class="option-label"><input type="radio" name="q{{ question.id }}" value="C"> {{ question.option_3 }}</label>
-                <label class="option-label"><input type="radio" name="q{{ question.id }}" value="D"> {{ question.option_4 }}</label>
-            </div>
-            {% endfor %}
-            <button type="submit">Submit Quiz</button>
-        </form>
-    </div>
+
+<div class="container">
+    <h1>Topic: {{ topic }}</h1>
+
+    <form method="POST" action="{% url 'result' %}">
+        {% csrf_token %}
+
+        {% for question in questions %}
+        <div class="question-block">
+
+            <p><strong>Q{{ forloop.counter }}: {{ question.question_text }}</strong></p>
+
+            <label>
+                <input type="radio" name="q{{ question.id }}" value="A" required>
+                {{ question.option_1 }}
+            </label><br>
+
+            <label>
+                <input type="radio" name="q{{ question.id }}" value="B">
+                {{ question.option_2 }}
+            </label><br>
+
+            <label>
+                <input type="radio" name="q{{ question.id }}" value="C">
+                {{ question.option_3 }}
+            </label><br>
+
+            <label>
+                <input type="radio" name="q{{ question.id }}" value="D">
+                {{ question.option_4 }}
+            </label><br>
+
+            
+            <input type="hidden" name="q{{ question.id }}_correct" value="{{ question.correct_answer }}">
+
+        </div>
+        {% endfor %}
+
+        <button type="submit">Submit Quiz</button>
+    </form>
+</div>
+
 </body>
 </html>

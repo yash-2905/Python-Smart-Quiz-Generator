@@ -51,7 +51,7 @@ def result(request):
         score = 0
 
         question_keys = [
-            key for key in request.POST
+            key for key in request.POST 
             if key.startswith("q") and not key.endswith("_correct")
         ]
 
@@ -82,14 +82,6 @@ def result(request):
             "percentage": int(percentage),
             "message": message
         })
-    
-
-    from django.contrib.auth.models import User
-from django.http import HttpResponse
-
-from django.contrib.auth.models import User
-from django.http import HttpResponse
-
 def create_admin(request):
     if not User.objects.filter(username='admin').exists():
         User.objects.create_superuser(
