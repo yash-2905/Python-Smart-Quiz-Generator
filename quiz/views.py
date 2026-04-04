@@ -2,17 +2,18 @@ import random
 from django.shortcuts import render
 from .models import Question
 
+
 def home(request):
-    return render(request, 'home.html')
+    return render(request, "home.html")
+
 
 def quiz(request):
     if request.method == "POST":
         topic = request.POST.get("topic")
         num_questions = request.POST.get("num_questions")
 
-        print(topic,num_questions)
-
-        if not topic or not num_questions:
+        # ✅ Validation fix
+        if not topic or num_questions is None or num_questions == "":
             return render(request, "home.html", {"error": "Please fill all fields"})
 
         try:
@@ -20,44 +21,47 @@ def quiz(request):
             if num_questions <= 0:
                 raise ValueError
         except:
-            return render(request, "home.html", {"error": "Enter a valid positive number"})
+            return render(request, "home.html", {"error": "Enter a valid number"})
 
+        # ✅ DB se questions fetch
         questions = Question.objects.filter(topic__icontains=topic)
+
+        if not questions:
+            return render(request, "home.html", {"error": "No question found for this topic"})
 
         all_questions = list(questions)
 
-        if not all_questions:
-            return render(request,"home.html",{
-                "error":"No question found for this topic"
-            })
-        selected_questions = random.sample(all_questions, min(num_questions, len(all_questions)))
+        selected_questions = random.sample(
+            all_questions,
+            min(num_questions, len(all_questions))
+        )
 
         return render(request, "quiz.html", {
             "topic": topic,
             "questions": selected_questions
         })
-    
+
     return render(request, "home.html")
+
 
 def result(request):
     if request.method == "POST":
         score = 0
-        # Sirf question keys nikalna (q1, q2 etc)
-        question_keys = [key for key in request.POST if key.startswith("q") and not key.endswith("_correct")]
+
+        question_keys = [
+            key for key in request.POST
+            if key.startswith("q") and not key.endswith("_correct")
+        ]
+
         total = len(question_keys)
 
         for key in question_keys:
             user_answer = request.POST.get(key)
-            q_id = key.replace("q", "")
-            
-            try:
-                # DATABASE se answer check karna (Security Fix)
-                question_obj = Question.objects.get(id=q_id)
-                if user_answer and question_obj.correct_answer:
-                    if user_answer.strip().upper() == question_obj.correct_answer.strip().upper():
-                        score += 1
-            except Question.DoesNotExist:
-                continue
+            correct_answer = request.POST.get(f"{key}_correct")
+
+            if user_answer and correct_answer:
+                if user_answer.strip().upper() == correct_answer.strip().upper():
+                    score += 1
 
         wrong_answers = total - score
         percentage = (score / total) * 100 if total > 0 else 0
