@@ -1,4 +1,4 @@
-from django.contrib.auth.models import user
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 import random
 from django.shortcuts import render
